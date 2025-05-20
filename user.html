@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your Vintage Rides user profile dashboard. Manage your personal information, view transaction history, saved cars, and account settings.">
+    <meta name="robots" content="noindex, nofollow"> <!-- Typically, user profiles are not indexed -->
+    <title>My Profile | Vintage Rides</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <style>
+        /* User Profile Page Specific Styles (can be merged into style.css later if preferred) */
+        body#page-user-profile {
+            background-color: var(--background-medium);
+            padding-top: var(--header-height); /* Account for fixed public header */
+        }
+
+        .user-dashboard-layout {
+            display: flex;
+            margin-top: var(--spacing-lg); /* Space below the main navbar */
+            gap: var(--spacing-lg);
+        }
+
+        .user-dashboard-sidebar {
+            flex: 0 0 280px; /* Fixed width sidebar */
+            background-color: var(--background-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-light);
+            height: fit-content; /* Adjust height to content */
+        }
+        .user-dashboard-sidebar h3 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .user-dashboard-sidebar .nav-link {
+            display: flex; /* Align icon and text */
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-color-dark);
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-xs);
+            transition: background-color var(--transition-speed-fast) ease, color var(--transition-speed-fast) ease;
+        }
+        .user-dashboard-sidebar .nav-link i {
+            margin-right: var(--spacing-sm);
+            width: 20px; /* For icon alignment */
+            text-align: center;
+        }
+        .user-dashboard-sidebar .nav-link:hover,
+        .user-dashboard-sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: var(--text-color-light);
+        }
+        .user-dashboard-sidebar .nav-link.logout-link:hover {
+            background-color: darken(var(--primary-color), 10%);
+        }
+
+        .user-dashboard-content {
+            flex-grow: 1;
+        }
+        .user-profile-section {
+            display: none; /* Hide sections by default */
+            background-color: var(--background-light);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-medium);
+            animation: fadeIn 0.5s;
+        }
+        .user-profile-section.active {
+            display: block;
+        }
+        .user-profile-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--secondary-color);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .profile-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        .profile-info-grid .form-group label { font-weight: 600; }
+        .profile-info-grid .form-control[readonly] { background-color: var(--background-medium); cursor: not-allowed;}
+        
+        .order-history-table th, .order-history-table td { vertical-align: middle; }
+        .order-history-table .car-thumbnail-order { width: 80px; height: auto; border-radius: var(--border-radius-sm); }
+
+        .saved-cars-grid .card { margin-bottom: var(--spacing-lg); } /* Ensure car cards have space in this context */
+
+        @media (max-width: 992px) {
+            .user-dashboard-layout {
+                flex-direction: column;
+            }
+            .user-dashboard-sidebar {
+                flex: 0 0 auto; /* Reset flex basis */
+                margin-bottom: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+<body id="page-user-profile">
+
+    <!-- ======== Header (Navigation Bar) - Same as other pages ======== -->
+    <header id="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html" aria-label="Vintage Rides Homepage">Vintage Rides</a>
+            </div>
+            <nav aria-label="Main navigation">
+                <button id="mobile-nav-toggle" aria-controls="main-navigation" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i><span class="sr-only">Toggle Navigation</span>
+                </button>
+                <ul id="main-navigation">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="cars.html">Cars</a></li>
+                    <li><a href="compare.html">Compare</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <!-- Login/Profile button will be dynamically updated by JS -->
+                    <li class="nav-action-item nav-action-login"><a href="login.html" class="nav-login-btn" id="nav-auth-link">Login / Register</a></li>
+                    <li class="nav-action-item nav-action-cart">
+                        <a href="cart.html" class="nav-cart-btn" aria-label="View Shopping Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-item-count" class="cart-item-count" aria-live="polite">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ======== Page Header Section ======== -->
+    <section class="page-header-section section-dark" style="min-height: 200px; display:flex; align-items:center;">
+        <div class="container">
+            <h1 class="page-title" id="user-dashboard-greeting">Welcome, [User Name]!</h1>
+            <p class="lead">Manage your Vintage Rides experience from here.</p>
+        </div>
+    </section>
+
+    <!-- ======== User Dashboard Layout ======== -->
+    <main class="section">
+        <div class="container">
+            <div class="user-dashboard-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="user-dashboard-sidebar">
+                    <h3>My Account</h3>
+                    <nav class="nav flex-column" id="user-dashboard-nav">
+                        <a class="nav-link user-nav-link active" href="#profile-details" data-section="profile-details-section">
+                            <i class="fas fa-user-circle"></i>Profile Details
+                        </a>
+                        <a class="nav-link user-nav-link" href="#order-history" data-section="order-history-section">
+                            <i class="fas fa-history"></i>Order History
+                        </a>
+                        <a class="nav-link user-nav-link" href="#saved-cars" data-section="saved-cars-section">
+                            <i class="fas fa-heart"></i>Saved Cars
+                        </a>
+                        <a class="nav-link user-nav-link" href="#account-settings" data-section="account-settings-section">
+                            <i class="fas fa-cog"></i>Account Settings
+                        </a>
+                        <hr>
+                        <a class="nav-link user-nav-link logout-link bg-primary text-light" href="#" id="user-logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>Logout
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- Main Content Area -->
+                <div class="user-dashboard-content">
+                    <!-- Profile Details Section -->
+                    <section id="profile-details-section" class="user-profile-section active">
+                        <h2><i class="fas fa-id-card me-2"></i>Personal Information</h2>
+                        <form id="user-profile-form">
+                            <div class="profile-info-grid">
+                                <div class="form-group">
+                                    <label for="profile-fullname">Full Name</label>
+                                    <input type="text" id="profile-fullname" class="form-control" value="John Doe" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-email">Email Address</label>
+                                    <input type="email" id="profile-email" class="form-control" value="john.doe@example.com" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-phone">Phone Number</label>
+                                    <input type="tel" id="profile-phone" class="form-control" value="(555) 123-4567">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-member-since">Member Since</label>
+                                    <input type="text" id="profile-member-since" class="form-control" value="January 15, 2023" readonly>
+                                </div>
+                            </div>
+                            <h4 class="mt-5 mb-3">Shipping Address</h4>
+                            <div class="profile-info-grid">
+                                <div class="form-group">
+                                    <label for="profile-address-street">Street Address</label>
+                                    <input type="text" id="profile-address-street" class="form-control" value="123 Classic Lane">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-address-city">City</label>
+                                    <input type="text" id="profile-address-city" class="form-control" value="Car City">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-address-state">State/Province</label>
+                                    <input type="text" id="profile-address-state" class="form-control" value="CA">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-address-zip">ZIP/Postal Code</label>
+                                    <input type="text" id="profile-address-zip" class="form-control" value="90210">
+                                </div>
+                                 <div class="form-group">
+                                    <label for="profile-address-country">Country</label>
+                                    <input type="text" id="profile-address-country" class="form-control" value="USA">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-4"><i class="fas fa-save"></i> Update Profile</button>
+                        </form>
+                    </section>
+
+                    <!-- Order History Section -->
+                    <section id="order-history-section" class="user-profile-section">
+                        <h2><i class="fas fa-receipt me-2"></i>Your Transaction History</h2>
+                        <div class="table-responsive">
+                            <table class="table table-hover order-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Car Purchased</th>
+                                        <th>Image</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-orders-tbody">
+                                    <!-- Mock Order 1 -->
+                                    <tr>
+                                        <td>VR-ORD-00157</td>
+                                        <td>2024-03-10</td>
+                                        <td>1957 Chevrolet Bel Air</td>
+                                        <td><img src="https://cdn.dealeraccelerate.com/car/1/802/53919/1920x1440/w/1956-chevrolet-bel-air" alt="Bel Air" class="car-thumbnail-order"></td>
+                                        <td>$65,000.00</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i> View Details</a></td>
+                                    </tr>
+                                    <!-- Mock Order 2 -->
+                                    <tr>
+                                        <td>VR-ORD-00123</td>
+                                        <td>2023-11-05</td>
+                                        <td>1967 Ford Mustang Shelby GT500</td>
+                                        <td><img src="https://cdn.dealeraccelerate.com/rkm/1/8238/561375/1920x1440/1967-ford-mustang-shelby-gt500-tribute" alt="Mustang" class="car-thumbnail-order"></td>
+                                        <td>$180,000.00</td>
+                                        <td><span class="badge bg-info text-dark">Processing</span></td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-dark"><i class="fas fa-eye"></i> View Details</a></td>
+                                    </tr>
+                                    <!-- Add more mock orders or a message if empty -->
+                                </tbody>
+                            </table>
+                        </div>
+                         <p id="no-orders-message" class="text-center mt-4" style="display:none;">You have not placed any orders yet. <a href="cars.html">Explore our collection!</a></p>
+                    </section>
+
+                    <!-- Saved Cars Section -->
+                    <section id="saved-cars-section" class="user-profile-section">
+                        <h2><i class="fas fa-bookmark me-2"></i>Your Wishlist / Saved Cars</h2>
+                        <div id="user-saved-cars-grid" class="car-grid">
+                            <!-- Mock Saved Car 1 -->
+                            <div class="card car-item">
+                                <img src="https://www.supercars.net/blog/wp-content/uploads/2016/02/Screenshot-2016-02-23-18.19.38.png" alt="Jaguar E-Type" class="card-img-top">
+                                <div class="card-body">
+                                    <h3 class="card-title">Jaguar E-Type Series 1</h3>
+                                    <p class="card-subtitle">1961</p>
+                                    <p class="card-price">$250,000</p>
+                                    <div class="card-footer d-flex justify-content-between">
+                                        <a href="cars.html#car-id-4" class="btn btn-primary btn-sm">View Details</a>
+                                        <button class="btn btn-outline-danger btn-sm" title="Remove from Wishlist"><i class="fas fa-heart-broken"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Add more mock saved cars or a message if empty -->
+                        </div>
+                        <p id="no-saved-cars-message" class="text-center mt-4" style="display:none;">You haven't saved any cars to your wishlist yet. <a href="cars.html">Start browsing!</a></p>
+                    </section>
+
+                    <!-- Account Settings Section -->
+                    <section id="account-settings-section" class="user-profile-section">
+                        <h2><i class="fas fa-user-shield me-2"></i>Security & Preferences</h2>
+                        <form id="user-settings-form">
+                            <div class="mb-4">
+                                <h4>Change Password</h4>
+                                <div class="form-group mb-2">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" id="current-password" class="form-control">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" id="new-password" class="form-control">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="confirm-new-password">Confirm New Password</label>
+                                    <input type="password" id="confirm-new-password" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </div>
+                            <hr>
+                            <div class="mt-4">
+                                <h4>Communication Preferences</h4>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="email-newsletter" checked>
+                                    <label class="form-check-label" for="email-newsletter">Receive Monthly Newsletter</label>
+                                </div>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="email-promotions">
+                                    <label class="form-check-label" for="email-promotions">Receive Promotional Offers</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Preferences</button>
+                            </div>
+                            <hr>
+                             <div class="mt-4">
+                                <h4>Account Deactivation</h4>
+                                <p class="small text-muted">Please note: Deactivating your account is a permanent action and cannot be undone. All your data will be removed.</p>
+                                <button type="button" class="btn btn-danger" id="deactivate-account-btn"><i class="fas fa-exclamation-triangle"></i> Deactivate My Account</button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ======== Footer (Same as other pages) ======== -->
+    <footer class="site-footer">
+        <div class="container">
+             <!-- ... (Full footer content as in other pages) ... -->
+            <div class="footer-columns-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <div class="footer-column">
+                    <h5>Vintage Rides</h5>
+                    <p>Your trusted partner in the world of classic and vintage automobiles. Discover, acquire, and cherish automotive history.</p>
+                    <div class="footer-social-icons">
+                        <a href="#" aria-label="Vintage Rides on Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Vintage Rides on YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="cars.html">Browse Cars</a></li>
+                        <li><a href="compare.html">Compare Models</a></li>
+                        <li><a href="about.html">About Our Company</a></li>
+                        <li><a href="contact.html#sell-car-form">Sell Your Car</a></li>
+                        <li><a href="login.html">Member Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Financing Options</a></li>
+                        <li><a href="#">Shipping & Logistics</a></li>
+                        <li><a href="#">Inspection Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Contact Us</h5>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 1234 Classic Lane, Car City, USA</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+15551234567">+1 (555) 123-4567</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:support@vintagerides.com">support@vintagerides.com</a></p>
+                        <p><i class="fas fa-clock"></i> Mon - Fri: 9:00 AM - 6:00 PM</p>
+                    </address>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2024</span> Vintage Rides LLC. All Rights Reserved. Designed with <i class="fas fa-heart text-primary"></i> for car lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======== Chat Widget (Same as other pages) ======== -->
+    <button id="chat-toggle-btn" aria-label="Toggle Chat Window" aria-expanded="false">
+        <i class="fas fa-comments"></i>
+    </button>
+    <div id="chat-widget" role="log" aria-live="polite">
+        <!-- ... (Full chat widget HTML as in other pages) ... -->
+        <div id="chat-widget-header">
+            <span class="chat-title">Chat with Us</span>
+            <button class="close-chat-btn" aria-label="Close Chat Window">&times;</button>
+        </div>
+        <div id="chat-widget-messages" aria-relevant="additions" aria-atomic="false"></div>
+        <div id="chat-widget-input">
+            <input type="text" placeholder="Type your message..." aria-label="Chat message input">
+            <button aria-label="Send Chat Message"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="script.js"></script>
+    <script>
+        // User Profile Page Specific JavaScript
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check login state (simulated)
+            const loggedInUser = JSON.parse(localStorage.getItem('loggedInVintageUser'));
+            if (!loggedInUser) {
+                // If not logged in, redirect to login page
+                // window.location.href = 'login.html';
+                // For demo, just show a message if direct access
+                document.querySelector('.user-dashboard-layout').innerHTML = 
+                    '<div class="container text-center p-5"><p class="lead">Please <a href="login.html">login</a> to view your profile.</p></div>';
+                document.getElementById('user-dashboard-greeting').textContent = "Access Denied";
+                return;
+            }
+
+            // Populate user greeting
+            document.getElementById('user-dashboard-greeting').textContent = `Welcome, ${loggedInUser.name || 'Valued User'}!`;
+            // Populate profile form (if data was stored)
+            if(document.getElementById('profile-fullname')) document.getElementById('profile-fullname').value = loggedInUser.name || 'John Doe';
+            if(document.getElementById('profile-email')) document.getElementById('profile-email').value = loggedInUser.email || 'john.doe@example.com';
+
+
+            const userNavLinks = document.querySelectorAll('.user-nav-link');
+            const userProfileSections = document.querySelectorAll('.user-profile-section');
+
+            function showUserProfileSection(sectionId) {
+                userProfileSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === sectionId) {
+                        section.classList.add('active');
+                    }
+                });
+                userNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.section === sectionId && !link.classList.contains('logout-link')) { // Don't activate logout link
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            userNavLinks.forEach(link => {
+                if (!link.id || link.id !== 'user-logout-btn') { // Exclude logout button from section toggling
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const sectionId = link.dataset.section;
+                        showUserProfileSection(sectionId);
+                        // Update URL hash for bookmarking/linking (optional)
+                        // window.location.hash = link.getAttribute('href');
+                    });
+                }
+            });
+
+            // Handle initial section display based on URL hash (optional)
+            // if (window.location.hash) {
+            //     const initialSectionId = window.location.hash.substring(1) + "-section";
+            //     const targetLink = document.querySelector(`.user-nav-link[href="${window.location.hash}"]`);
+            //     if (targetLink && document.getElementById(initialSectionId)) {
+            //         showUserProfileSection(initialSectionId);
+            //     } else {
+            //         showUserProfileSection('profile-details-section'); // Default
+            //     }
+            // } else {
+                showUserProfileSection('profile-details-section'); // Default view
+            // }
+
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('user-logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to logout?")) {
+                        localStorage.removeItem('loggedInVintageUser');
+                        // Potentially clear other session-related data
+                        alert("You have been logged out.");
+                        window.location.href = 'index.html'; // Redirect to homepage
+                    }
+                });
+            }
+            
+            // Mock update profile form submission
+            const profileForm = document.getElementById('user-profile-form');
+            if(profileForm) {
+                profileForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // In a real app, send data to server
+                    alert("Profile update submitted (simulation)!");
+                });
+            }
+            
+            // Mock settings form submission
+            const settingsForm = document.getElementById('user-settings-form');
+            if(settingsForm) {
+                settingsForm.addEventListener('submit', (e) => {
+                     e.preventDefault();
+                    // In a real app, send data to server
+                    alert("Settings update submitted (simulation)!");
+                });
+            }
+            const deactivateBtn = document.getElementById('deactivate-account-btn');
+            if(deactivateBtn) {
+                deactivateBtn.addEventListener('click', () => {
+                    if(confirm("ARE YOU ABSOLUTELY SURE? This action is permanent and cannot be undone. All your data will be erased.")){
+                        if(confirm("Second confirmation: Are you certain you wish to deactivate your account?")){
+                            localStorage.removeItem('loggedInVintageUser');
+                            alert("Account deactivated (simulation). You have been logged out.");
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
+            }
+
+            // Check if mock orders/saved cars exist to hide "no items" messages
+            // This is simplified; real app would fetch data
+            if (document.getElementById('user-orders-tbody') && document.getElementById('user-orders-tbody').children.length > 0) {
+                if(document.getElementById('no-orders-message')) document.getElementById('no-orders-message').style.display = 'none';
+            } else {
+                 if(document.getElementById('no-orders-message')) document.getElementById('no-orders-message').style.display = 'block';
+            }
+
+            if (document.getElementById('user-saved-cars-grid') && document.getElementById('user-saved-cars-grid').children.length > 0) {
+                 if(document.getElementById('no-saved-cars-message')) document.getElementById('no-saved-cars-message').style.display = 'none';
+            } else {
+                 if(document.getElementById('no-saved-cars-message')) document.getElementById('no-saved-cars-message').style.display = 'block';
+            }
+
+
+        });
+        // Footer year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

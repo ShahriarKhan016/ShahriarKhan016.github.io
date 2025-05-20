@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vintage Rides Administration Panel for managing car inventory, users, and site settings.">
+    <meta name="robots" content="noindex, nofollow"> <!-- Prevent search engines from indexing admin pages -->
+    <title>Admin Dashboard | Vintage Rides</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon (ensure these files exist in your project root or images folder) -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <style>
+        /* Admin-specific styles that might not be in the global style.css or need overriding */
+        body#page-admin {
+            background-color: var(--background-medium); /* Admin often has a slightly different BG */
+            padding-top: 0; /* Admin layout manages its own header/topbar */
+        }
+
+        .admin-topbar {
+            background-color: var(--secondary-color);
+            color: var(--text-color-light);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height); /* Match public header height */
+            position: fixed;
+            top: 0;
+            left: 0; /* Will be offset by sidebar width in a more complex setup */
+            width: 100%;
+            z-index: 1010; /* Above sidebar */
+        }
+        .admin-topbar .logo a {
+            font-family: var(--font-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color-light);
+            text-decoration: none;
+        }
+        .admin-topbar .admin-user-menu a {
+            color: var(--text-color-light);
+            text-decoration: none;
+            margin-left: var(--spacing-md);
+        }
+        .admin-topbar .admin-user-menu a:hover { color: var(--primary-color); }
+
+        /* .admin-layout defined in style.css */
+        /* .admin-sidebar defined in style.css */
+        /* .admin-content defined in style.css */
+        
+        .admin-layout {
+            padding-top: var(--header-height); /* Account for fixed topbar */
+        }
+        .admin-sidebar {
+            top: var(--header-height); /* Position below topbar */
+            height: calc(100vh - var(--header-height)); /* Full height minus topbar */
+            position: fixed; /* Fixed sidebar */
+            z-index: 1005;
+        }
+        .admin-content {
+            margin-left: 250px; /* Same as sidebar width */
+            padding-top: var(--spacing-xl); /* Space below topbar if topbar wasn't fixed */
+        }
+
+
+        .admin-section {
+            display: none; /* Hide all sections by default */
+            animation: fadeIn 0.5s;
+        }
+        .admin-section.active {
+            display: block; /* Show active section */
+        }
+
+        .stat-card {
+            background-color: var(--background-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-medium);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            display: block;
+        }
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-color-dark);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+            background-color: var(--background-light);
+            box-shadow: var(--box-shadow-medium);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+        }
+        .admin-table th, .admin-table td {
+            padding: var(--spacing-sm) var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-table th {
+            background-color: var(--background-medium);
+            font-weight: 600;
+            font-family: var(--font-primary);
+        }
+        .admin-table tr:last-child td { border-bottom: none; }
+        .admin-table .actions a, .admin-table .actions button {
+            margin-right: var(--spacing-xs);
+            color: var(--primary-color);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .admin-table .actions a:hover, .admin-table .actions button:hover { color: darken(var(--primary-color), 10%); }
+        .admin-table .actions .delete-btn { color: #dc3545; }
+        .admin-table .actions .delete-btn:hover { color: darken(#dc3545, 10%); }
+        .admin-table img.table-preview-img {
+            max-width: 80px;
+            height: auto;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .admin-form-container {
+            background-color: var(--background-light);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-medium);
+            margin-top: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .admin-content { margin-left: 0; } /* Sidebar might overlay or hide on mobile */
+            .admin-sidebar {
+                /* Example: transform to an off-canvas menu or a top horizontal menu on mobile */
+                /* For this basic version, we'll assume it might be toggled or just stacks. */
+                 width: 100%; /* Full width for mobile */
+                 height: auto;
+                 position: static; /* No longer fixed */
+                 top: auto;
+            }
+            .admin-layout { flex-direction: column; } /* Stack sidebar and content */
+        }
+
+    </style>
+</head>
+<body id="page-admin">
+
+    <div class="admin-topbar">
+        <div class="logo">
+            <a href="admin.html" aria-label="Vintage Rides Admin Homepage">Vintage Rides Admin</a>
+        </div>
+        <div class="admin-user-menu">
+            <span>Welcome, Admin!</span>
+            <a href="#" id="admin-profile-link" aria-label="Admin Profile"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="index.html" id="admin-logout-link" aria-label="Logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <h3 class="text-center mt-3 mb-4">Navigation</h3>
+            <nav aria-label="Admin section navigation">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link admin-nav-link active" href="#dashboard" data-section="dashboard-section">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-nav-link" href="#manage-cars" data-section="manage-cars-section">
+                            <i class="fas fa-car me-2"></i>Manage Cars
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-nav-link" href="#manage-users" data-section="manage-users-section">
+                            <i class="fas fa-users-cog me-2"></i>Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-nav-link" href="#manage-orders" data-section="manage-orders-section">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>View Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link admin-nav-link" href="#site-settings" data-section="site-settings-section">
+                            <i class="fas fa-cogs me-2"></i>Site Settings
+                        </a>
+                    </li>
+                    <li class="nav-item mt-auto"> <!-- Push to bottom -->
+                        <a class="nav-link admin-nav-link" href="index.html">
+                            <i class="fas fa-globe me-2"></i>View Public Site
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h1>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <i class="fas fa-car"></i>
+                            <span class="stat-value" id="total-cars-stat">12</span>
+                            <span class="stat-label">Total Cars in Inventory</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <span class="stat-value" id="total-users-stat">150</span>
+                            <span class="stat-label">Registered Users</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="stat-value" id="total-orders-stat">35</span>
+                            <span class="stat-label">Completed Sales (Simulated)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Recent Activity</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">New car added: 1969 Dodge Charger</li>
+                                    <li class="list-group-item">User registration: john.doe@example.com</li>
+                                    <li class="list-group-item">Sale completed: 1957 Chevrolet Bel Air</li>
+                                    <li class="list-group-item">Site settings updated: Homepage banner</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Quick Actions</h5>
+                                <a href="#" class="btn btn-primary mb-2 w-100 admin-nav-link" data-section="manage-cars-section" data-show-form="add-car-form-container">
+                                    <i class="fas fa-plus-circle"></i> Add New Car
+                                </a>
+                                <a href="#" class="btn btn-info mb-2 w-100 admin-nav-link" data-section="manage-users-section">
+                                    <i class="fas fa-user-edit"></i> View Users
+                                </a>
+                                <a href="#" class="btn btn-secondary w-100 admin-nav-link" data-section="site-settings-section">
+                                    <i class="fas fa-tools"></i> Configure Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Manage Cars Section -->
+            <section id="manage-cars-section" class="admin-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-car"></i> Manage Car Inventory</h1>
+                    <button class="btn btn-primary" id="show-add-car-form-btn">
+                        <i class="fas fa-plus-circle"></i> Add New Car
+                    </button>
+                </div>
+
+                <!-- Add/Edit Car Form (hidden by default) -->
+                <div id="add-car-form-container" class="admin-form-container" style="display: none;">
+                    <h2 id="car-form-title" class="mb-3">Add New Car</h2>
+                    <form id="admin-car-form" class="needs-validation" novalidate>
+                        <input type="hidden" id="car-id-edit" name="carIdEdit"> <!-- For editing existing car -->
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="car-make" class="form-label">Make <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="car-make" name="carMake" required>
+                                <div class="form-feedback invalid">Please enter the car make.</div>
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="car-model" class="form-label">Model <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="car-model" name="carModel" required>
+                                <div class="form-feedback invalid">Please enter the car model.</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="car-year" class="form-label">Year <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="car-year" name="carYear" required min="1886" max="2025">
+                                <div class="form-feedback invalid">Please enter a valid year.</div>
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="car-price" class="form-label">Price (USD) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="car-price" name="carPrice" required min="0" step="100">
+                                <div class="form-feedback invalid">Please enter a valid price.</div>
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="car-mileage" class="form-label">Mileage <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="car-mileage" name="carMileage" required min="0">
+                                <div class="form-feedback invalid">Please enter valid mileage.</div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="car-engine" class="form-label">Engine Details</label>
+                            <input type="text" class="form-control" id="car-engine" name="carEngine">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="car-description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="car-description" name="carDescription" rows="4" required></textarea>
+                            <div class="form-feedback invalid">Please provide a description.</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="car-image-url" class="form-label">Image URL <span class="text-danger">*</span></label>
+                                <input type="url" class="form-control" id="car-image-url" name="carImageUrl" placeholder="https://example.com/image.jpg" required>
+                                <div class="form-feedback invalid">Please enter a valid image URL.</div>
+                                <!-- For actual file upload: <input type="file" class="form-control" id="car-image-file" name="carImageFile"> -->
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label for="car-status" class="form-label">Status</label>
+                                <select id="car-status" name="carStatus" class="form-control form-select">
+                                    <option value="Available">Available</option>
+                                    <option value="Sold">Sold</option>
+                                    <option value="Pending">Pending Sale</option>
+                                </select>
+                            </div>
+                             <div class="col-md-3 form-group mb-3">
+                                <label for="car-badge" class="form-label">Badge (e.g., Featured)</label>
+                                <input type="text" class="form-control" id="car-badge" name="carBadge" placeholder="Featured, Just Arrived">
+                            </div>
+                        </div>
+                        <div class="form-actions mt-3">
+                            <button type="submit" class="btn btn-primary" id="save-car-btn">Save Car</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-car-form-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Car List Table -->
+                <div class="table-responsive mt-4">
+                    <table class="admin-table" id="cars-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Make</th>
+                                <th>Model</th>
+                                <th>Year</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cars-table-body">
+                            <!-- Car rows will be populated by JavaScript -->
+                            <!-- Example row:
+                            <tr>
+                                <td>1</td>
+                                <td><img src="..." alt="Car Thumbnail" class="table-preview-img"></td>
+                                <td>Chevrolet</td>
+                                <td>Bel Air</td>
+                                <td>1957</td>
+                                <td>$65,000</td>
+                                <td>Available</td>
+                                <td class="actions">
+                                    <a href="#" class="edit-car-btn" data-id="1" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <button class="delete-car-btn" data-id="1" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            </tr>
+                            -->
+                        </tbody>
+                    </table>
+                </div>
+                 <p id="loading-cars-admin" class="mt-3" style="display:none;">Loading car data...</p>
+                 <p id="no-cars-admin" class="mt-3" style="display:none;">No cars found in inventory.</p>
+            </section>
+
+            <!-- Manage Users Section (Placeholder) -->
+            <section id="manage-users-section" class="admin-section">
+                <h1><i class="fas fa-users-cog"></i> Manage Users</h1>
+                <p>User management interface will be here. This would typically include a table of users with options to view details, edit roles, or suspend accounts.</p>
+                <!-- Example: User table and add user form -->
+                <div class="table-responsive mt-4">
+                    <table class="admin-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Registered On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr><td>101</td><td>John Admin</td><td>admin@vintagerides.com</td><td>Admin</td><td>2023-01-15</td><td class="actions"><a href="#"><i class="fas fa-edit"></i></a> <a href="#" class="delete-btn"><i class="fas fa-user-times"></i></a></td></tr>
+                            <tr><td>102</td><td>Jane Customer</td><td>jane@example.com</td><td>Customer</td><td>2024-03-20</td><td class="actions"><a href="#"><i class="fas fa-edit"></i></a> <a href="#" class="delete-btn"><i class="fas fa-user-times"></i></a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- View Orders Section (Placeholder) -->
+            <section id="manage-orders-section" class="admin-section">
+                <h1><i class="fas fa-file-invoice-dollar"></i> View Orders (Simulated)</h1>
+                <p>Order management interface. This would display details of sales, customer information, payment status, etc.</p>
+                 <div class="table-responsive mt-4">
+                    <table class="admin-table" id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Car Sold</th>
+                                <th>Date</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <tr><td>ORD-001</td><td>Jane Customer</td><td>1957 Chevrolet Bel Air</td><td>2024-05-01</td><td>$65,000</td><td>Completed</td><td class="actions"><a href="#"><i class="fas fa-eye"></i> View</a></td></tr>
+                             <tr><td>ORD-002</td><td>Mark Buyer</td><td>1963 VW Beetle</td><td>2024-04-22</td><td>$25,000</td><td>Completed</td><td class="actions"><a href="#"><i class="fas fa-eye"></i> View</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Site Settings Section (Placeholder) -->
+            <section id="site-settings-section" class="admin-section">
+                <h1><i class="fas fa-cogs"></i> Site Settings</h1>
+                <p>General site configuration options will be here.</p>
+                <div class="admin-form-container">
+                    <form id="site-settings-form">
+                        <div class="form-group mb-3">
+                            <label for="site-name" class="form-label">Site Name</label>
+                            <input type="text" id="site-name" class="form-control" value="Vintage Rides">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="admin-email" class="form-label">Administrator Email</label>
+                            <input type="email" id="admin-email" class="form-control" value="admin@vintagerides.com">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="hero-video-url" class="form-label">Homepage Hero Video URL</label>
+                            <input type="url" id="hero-video-url" class="form-control" value="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4">
+                        </div>
+                         <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="maintenance-mode" checked>
+                            <label class="form-check-label" for="maintenance-mode">Enable Maintenance Mode</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="script.js"></script>
+    <script>
+        // Admin-specific JavaScript
+        document.addEventListener('DOMContentLoaded', () => {
+            const adminNavLinks = document.querySelectorAll('.admin-nav-link');
+            const adminSections = document.querySelectorAll('.admin-section');
+            const carsTableBody = document.getElementById('cars-table-body');
+            const loadingCarsAdminMsg = document.getElementById('loading-cars-admin');
+            const noCarsAdminMsg = document.getElementById('no-cars-admin');
+            
+            // Mock admin car data (subset of main site's data for demo)
+            const adminMockCars = [...mockCarsData]; // Assuming mockCarsData is available from script.js
+
+            function showAdminSection(sectionId) {
+                adminSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === sectionId) {
+                        section.classList.add('active');
+                    }
+                });
+                adminNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${sectionId.replace('-section', '')}` || link.dataset.section === sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            adminNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = link.dataset.section;
+                    showAdminSection(sectionId);
+                    if (link.dataset.showForm) { // For quick actions on dashboard
+                        document.getElementById(link.dataset.showForm).style.display = 'block';
+                        if (link.dataset.showForm === 'add-car-form-container') {
+                             document.getElementById('car-form-title').textContent = 'Add New Car';
+                             document.getElementById('admin-car-form').reset();
+                             document.getElementById('car-id-edit').value = '';
+                        }
+                    }
+                });
+            });
+
+            // Show/Hide Add Car Form
+            const addCarFormContainer = document.getElementById('add-car-form-container');
+            const showAddCarFormBtn = document.getElementById('show-add-car-form-btn');
+            const cancelCarFormBtn = document.getElementById('cancel-car-form-btn');
+            const carFormTitle = document.getElementById('car-form-title');
+            const adminCarForm = document.getElementById('admin-car-form');
+            const carIdEditField = document.getElementById('car-id-edit');
+
+            if (showAddCarFormBtn) {
+                showAddCarFormBtn.addEventListener('click', () => {
+                    addCarFormContainer.style.display = 'block';
+                    carFormTitle.textContent = 'Add New Car';
+                    adminCarForm.reset();
+                    carIdEditField.value = ''; // Clear edit ID
+                });
+            }
+            if (cancelCarFormBtn) {
+                cancelCarFormBtn.addEventListener('click', () => {
+                    addCarFormContainer.style.display = 'none';
+                    adminCarForm.reset();
+                });
+            }
+
+            // Populate and handle car form submission (basic, front-end only)
+            if (adminCarForm) {
+                adminCarForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (!validateForm(adminCarForm)) return; // Uses global validateForm
+
+                    const carData = {
+                        id: carIdEditField.value ? parseInt(carIdEditField.value) : Date.now(), // Use existing ID or new timestamp
+                        make: document.getElementById('car-make').value,
+                        model: document.getElementById('car-model').value,
+                        year: parseInt(document.getElementById('car-year').value),
+                        price: parseFloat(document.getElementById('car-price').value),
+                        mileage: parseInt(document.getElementById('car-mileage').value),
+                        engine: document.getElementById('car-engine').value,
+                        description: document.getElementById('car-description').value,
+                        image: document.getElementById('car-image-url').value,
+                        status: document.getElementById('car-status').value,
+                        badge: document.getElementById('car-badge').value
+                    };
+
+                    if (carIdEditField.value) { // Editing existing car
+                        const index = adminMockCars.findIndex(car => car.id === carData.id);
+                        if (index > -1) adminMockCars[index] = carData;
+                        alert('Car updated successfully!');
+                    } else { // Adding new car
+                        adminMockCars.unshift(carData); // Add to beginning for visibility
+                        alert('Car added successfully!');
+                    }
+                    
+                    renderAdminCarsTable();
+                    addCarFormContainer.style.display = 'none';
+                    adminCarForm.reset();
+                });
+            }
+
+            function populateCarFormForEdit(carId) {
+                const car = adminMockCars.find(c => c.id.toString() === carId.toString());
+                if (!car) return;
+
+                carIdEditField.value = car.id;
+                document.getElementById('car-make').value = car.make;
+                document.getElementById('car-model').value = car.model;
+                document.getElementById('car-year').value = car.year;
+                document.getElementById('car-price').value = car.price;
+                document.getElementById('car-mileage').value = car.mileage;
+                document.getElementById('car-engine').value = car.engine || '';
+                document.getElementById('car-description').value = car.description;
+                document.getElementById('car-image-url').value = car.image;
+                document.getElementById('car-status').value = car.status || 'Available';
+                document.getElementById('car-badge').value = car.badge || '';
+                
+                carFormTitle.textContent = 'Edit Car';
+                addCarFormContainer.style.display = 'block';
+                window.scrollTo({ top: addCarFormContainer.offsetTop - 100, behavior: 'smooth' });
+            }
+
+            function deleteAdminCar(carId) {
+                if (confirm(`Are you sure you want to delete car ID ${carId}? This action cannot be undone.`)) {
+                    const index = adminMockCars.findIndex(car => car.id.toString() === carId.toString());
+                    if (index > -1) {
+                        adminMockCars.splice(index, 1);
+                        renderAdminCarsTable();
+                        alert(`Car ID ${carId} deleted.`);
+                    }
+                }
+            }
+
+
+            // Render cars table
+            function renderAdminCarsTable() {
+                if (!carsTableBody) return;
+                carsTableBody.innerHTML = ''; // Clear existing rows
+                
+                if (adminMockCars.length === 0) {
+                    if (noCarsAdminMsg) noCarsAdminMsg.style.display = 'block';
+                    if (loadingCarsAdminMsg) loadingCarsAdminMsg.style.display = 'none';
+                    return;
+                }
+                if (noCarsAdminMsg) noCarsAdminMsg.style.display = 'none';
+                if (loadingCarsAdminMsg) loadingCarsAdminMsg.style.display = 'none';
+
+                adminMockCars.forEach(car => {
+                    const row = carsTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${car.id}</td>
+                        <td><img src="${car.image}" alt="${car.make} ${car.model}" class="table-preview-img"></td>
+                        <td>${car.make}</td>
+                        <td>${car.model}</td>
+                        <td>${car.year}</td>
+                        <td>$${car.price.toLocaleString()}</td>
+                        <td><span class="badge bg-${car.status === 'Available' ? 'success' : (car.status === 'Sold' ? 'danger' : 'warning')}">${car.status}</span></td>
+                        <td class="actions">
+                            <button class="edit-car-btn btn-link p-0" data-id="${car.id}" title="Edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-car-btn btn-link p-0 text-danger" data-id="${car.id}" title="Delete"><i class="fas fa-trash-alt"></i> Delete</button>
+                        </td>
+                    `;
+                });
+
+                // Add event listeners to new edit/delete buttons
+                carsTableBody.querySelectorAll('.edit-car-btn').forEach(btn => {
+                    btn.addEventListener('click', () => populateCarFormForEdit(btn.dataset.id));
+                });
+                carsTableBody.querySelectorAll('.delete-car-btn').forEach(btn => {
+                    btn.addEventListener('click', () => deleteAdminCar(btn.dataset.id));
+                });
+            }
+            
+            // Initial setup
+            if (document.getElementById('dashboard-section')) { // Check if on admin page
+                if (loadingCarsAdminMsg) loadingCarsAdminMsg.style.display = 'block';
+                setTimeout(() => { // Simulate data loading
+                    renderAdminCarsTable();
+                     // Update dashboard stats based on initial data
+                    document.getElementById('total-cars-stat').textContent = adminMockCars.length;
+                }, 500);
+            }
+            
+            // Initial active section
+            showAdminSection('dashboard-section'); 
+            
+        });
+    </script>
+</body>
+</html>

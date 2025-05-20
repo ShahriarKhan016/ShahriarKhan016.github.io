@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore a curated collection of classic, exotic, and luxury vintage automobiles at Vintage Rides. Filter by price, year, make, and model to find your dream car.">
+    <meta name="keywords" content="vintage car inventory, classic car listings, browse vintage cars, car filters, buy classic cars">
+    <title>Our Collection - Vintage Cars | Vintage Rides</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon (ensure these files exist in your project root or images folder) -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+</head>
+<body id="page-cars">
+
+    <!-- ======== Header (Navigation Bar) ======== -->
+    <header id="navbar">
+        <div class="container"> <!-- The CSS makes this the flex container -->
+            <div class="logo">
+                <a href="index.html" aria-label="Vintage Rides Homepage">Vintage Rides</a>
+            </div>
+            <nav aria-label="Main navigation">
+                <!-- Mobile toggle button -->
+                <button id="mobile-nav-toggle" aria-controls="main-navigation" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Toggle Navigation</span>
+                </button>
+                <!-- Main navigation list -->
+                <ul id="main-navigation">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="cars.html">Cars</a></li>
+                    <li><a href="compare.html">Compare</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li class="nav-action-item nav-action-login"><a href="login.html" class="nav-login-btn" id="nav-auth-link">Login / Register</a></li>
+                    <li class="nav-action-item nav-action-cart">
+                        <a href="cart.html" class="nav-cart-btn" aria-label="View Shopping Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-item-count" class="cart-item-count" aria-live="polite">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- ======== Mobile Navigation (Hidden by default) ======== -->    
+
+    <!-- ======== Page Header Section ======== -->
+    <section class="page-header-section section-dark">
+        <div class="container text-center">
+            <h1 class="page-title">Explore Our Collection</h1>
+            <p class="lead">Discover an unparalleled selection of vintage automobiles, meticulously curated for the discerning enthusiast.</p>
+        </div>
+    </section>
+
+    <!-- ======== Filter Bar Section ======== -->
+    <section id="filter-section" class="section section-light sticky-filter-bar"> <!-- Add class for potential sticky behavior with JS -->
+        <div class="container">
+            <form id="car-filters-form" class="filter-bar" aria-labelledby="filter-heading">
+                <h2 id="filter-heading" class="sr-only">Filter Car Listings</h2>
+                <div class="filter-group search-filter">
+                    <label for="search-term" class="sr-only">Search by Make, Model, or Year</label>
+                    <input type="text" id="search-term" class="form-control" placeholder="Search (e.g., Mustang, 1965, Ford)">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-price" class="sr-only">Filter by Price</label>
+                    <select id="filter-price" class="form-control form-select">
+                        <option value="all">All Prices</option>
+                        <option value="under50k">Under $50,000</option>
+                        <option value="50k-100k">$50,000 - $100,000</option>
+                        <option value="100k-250k">$100,000 - $250,000</option>
+                        <option value="250k-500k">$250,000 - $500,000</option>
+                        <option value="over500k">Over $500,000</option>
+                        <!-- Add more price ranges as needed -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-year" class="sr-only">Filter by Year</label>
+                    <select id="filter-year" class="form-control form-select">
+                        <option value="all">All Years</option>
+                        <!-- Years will be populated by JavaScript from mockCarsData -->
+                        <!-- Example: <option value="1965">1965</option> -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-make" class="sr-only">Filter by Make</label>
+                    <select id="filter-make" class="form-control form-select">
+                        <option value="all">All Makes</option>
+                        <!-- Makes will be populated by JavaScript -->
+                        <!-- Example: <option value="ford">Ford</option> -->
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-sort" class="sr-only">Sort By</label>
+                    <select id="filter-sort" class="form-control form-select">
+                        <option value="default">Default Sort</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="year-asc">Year: Oldest First</option>
+                        <option value="year-desc">Year: Newest First</option>
+                        <option value="make-asc">Make: A to Z</option>
+                    </select>
+                </div>
+
+                <div class="filter-group filter-actions">
+                    <button type="submit" class="btn btn-primary" id="apply-filters-btn">
+                        <i class="fas fa-filter"></i> Apply
+                    </button>
+                    <button type="reset" class="btn btn-outline-dark" id="reset-filters-btn">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- ======== Car Listings Section ======== -->
+    <main id="car-listings-section" class="section section-medium">
+        <div class="container">
+            <div class="listing-summary mb-4 d-flex justify-content-between align-items-center">
+                <p id="results-count" role="status" aria-live="polite">Showing all <span class="count-number">12</span> cars.</p> 
+                <!-- JS will update this count -->
+                <!-- <div class="view-toggle">
+                    <button id="grid-view-btn" class="btn btn-sm btn-secondary active" aria-label="Grid View"><i class="fas fa-th-large"></i></button>
+                    <button id="list-view-btn" class="btn btn-sm btn-secondary" aria-label="List View"><i class="fas fa-list"></i></button>
+                </div> -->
+            </div>
+            
+            <div id="car-listings-container" class="car-grid">
+                <!-- 
+                    Car cards will be dynamically inserted here by script.js.
+                    The structure of each card is defined in script.js `renderCarListings` function.
+                    Example of how one card might look (from script.js):
+                    <div class="card car-item">
+                        <div class="card-badge card-badge-featured">Featured</div>
+                        <img src="path/to/image.jpg" alt="Car Name" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Make Model</h3>
+                            <p class="card-subtitle">Year</p>
+                            <p class="card-text">Short description...</p>
+                            <p class="card-price">$Price</p>
+                            <div class="card-footer">
+                                <button class="btn btn-primary btn-sm view-details-btn" data-car-id="X">View Details</button>
+                                <button class="btn btn-secondary btn-sm add-to-cart-btn" data-car-id="X">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                -->
+                <p class="loading-cars-message">Loading available cars, please wait...</p>
+            </div>
+
+            <!-- Pagination (Placeholder - JS might implement this if many cars) -->
+            <nav aria-label="Car listings navigation" class="mt-5">
+                <ul class="pagination justify-content-center" id="pagination-controls" style="display: none;"> 
+                    <!-- JS will show and populate if needed -->
+                    <!-- Example items:
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    -->
+                </ul>
+            </nav>
+        </div>
+    </main>
+    
+    <!-- ======== Call to Action Section (Optional) ======== -->
+    <section id="cta-find-dream-car" class="section section-primary text-center scroll-fade-in">
+        <div class="container">
+            <h2 class="section-title">Can't Find Your Dream Car?</h2>
+            <p class="lead mb-4">Our inventory is always evolving. Let us know what you're looking for, and our sourcing experts will help you find it.</p>
+            <a href="contact.html#car-finder-form" class="btn btn-light btn-lg">Request a Car</a>
+        </div>
+    </section>
+
+
+    <!-- ======== Footer ======== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-columns-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <div class="footer-column">
+                    <h5>Vintage Rides</h5>
+                    <p>Your trusted partner in the world of classic and vintage automobiles. Discover, acquire, and cherish automotive history.</p>
+                    <div class="footer-social-icons">
+                        <a href="#" aria-label="Vintage Rides on Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Vintage Rides on YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="cars.html">Browse Cars</a></li>
+                        <li><a href="compare.html">Compare Models</a></li>
+                        <li><a href="about.html">About Our Company</a></li>
+                        <li><a href="contact.html#sell-car-form">Sell Your Car</a></li>
+                        <li><a href="login.html">Member Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Financing Options</a></li>
+                        <li><a href="#">Shipping & Logistics</a></li>
+                        <li><a href="#">Inspection Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Contact Us</h5>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 1234 Classic Lane, Car City, USA</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+15551234567">+1 (555) 123-4567</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:support@vintagerides.com">support@vintagerides.com</a></p>
+                        <p><i class="fas fa-clock"></i> Mon - Fri: 9:00 AM - 6:00 PM</p>
+                    </address>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2024</span> Vintage Rides LLC. All Rights Reserved. Designed with <i class="fas fa-heart text-primary"></i> for car lovers.</p>
+                <p class="small">This website is a demonstration project and does not represent a real business.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======== Modals (Hidden by default) ======== -->
+    <!-- Car Detail Modal (Same as in index.html, content injected by JS) -->
+    <div id="carDetailModal" class="modal" aria-labelledby="carDetailModalTitle" aria-hidden="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="carDetailModalTitle" class="modal-title">Car Details</h3>
+                    <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be injected by JavaScript -->
+                    <p>Loading car details...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-modal-dismiss>Close</button>
+                    <!-- Add to cart button specific to modal can be added here if desired -->
+                    <!-- <button type="button" class="btn btn-primary add-to-cart-modal-btn">Add to Cart</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== Chat Widget (Same as in index.html) ======== -->
+    <button id="chat-toggle-btn" aria-label="Toggle Chat Window" aria-expanded="false">
+        <i class="fas fa-comments"></i>
+    </button>
+    <div id="chat-widget" role="log" aria-live="polite">
+        <div id="chat-widget-header">
+            <span>Chat with Us</span>
+            <button class="close-chat-btn" aria-label="Close Chat Window">&times;</button>
+        </div>
+        <div id="chat-widget-messages" aria-relevant="additions" aria-atomic="false">
+            <!-- Messages will appear here -->
+        </div>
+        <div id="chat-widget-input">
+            <input type="text" placeholder="Type your message..." aria-label="Chat message input">
+            <button aria-label="Send Chat Message"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="script.js"></script>
+    <script>
+        // Small inline script to set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Placeholder for potential cars.html specific JS enhancements,
+        // like handling grid/list view toggle if not in main script.js.
+        // Most functionality (filters, rendering) is in the main script.js
+        const gridViewBtn = document.getElementById('grid-view-btn');
+        const listViewBtn = document.getElementById('list-view-btn');
+        const carListingsContainer = document.getElementById('car-listings-container');
+
+        if (gridViewBtn && listViewBtn && carListingsContainer) {
+            gridViewBtn.addEventListener('click', () => {
+                carListingsContainer.classList.remove('list-view');
+                carListingsContainer.classList.add('grid-view'); // Assuming default is grid, or add explicitly
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+            });
+
+            listViewBtn.addEventListener('click', () => {
+                carListingsContainer.classList.remove('grid-view');
+                carListingsContainer.classList.add('list-view');
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+            });
+        }
+        
+        // Reset button functionality for filters
+        const resetFiltersBtn = document.getElementById('reset-filters-btn');
+        const carFiltersForm = document.getElementById('car-filters-form');
+        if(resetFiltersBtn && carFiltersForm) {
+            resetFiltersBtn.addEventListener('click', () => {
+                carFiltersForm.reset(); // Resets form fields
+                // Manually trigger filter application to show all cars
+                // This assumes applyFilters() in script.js reads current form values
+                if (typeof applyFilters === 'function') {
+                    // Need to update currentCarFilters in script.js or ensure applyFilters reads form directly.
+                    // For simplicity, if applyFilters reads from DOMElements, this reset + applyFilters call should work.
+                    // A more robust way would be to have a resetFilters function in script.js.
+                    document.getElementById('search-term').value = ''; // Explicitly clear if form.reset() is not enough for some reason
+                    document.getElementById('filter-price').value = 'all';
+                    document.getElementById('filter-year').value = 'all';
+                    document.getElementById('filter-make').value = 'all';
+                    document.getElementById('filter-sort').value = 'default';
+                    applyFilters(); 
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

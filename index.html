@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RetroRides - The premier marketplace for classic, exotic, and luxury vintage automobiles. Discover, buy, or sell timeless automotive masterpieces.">
+    <meta name="keywords" content="vintage cars, classic cars, luxury cars, exotic cars, car marketplace, buy vintage cars, sell vintage cars, Tesla-inspired design">
+    <title>RetroRides - Premier Classic Car Marketplace</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome (for icons - ensure you have a kit or CDN link) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Favicon (replace with your actual favicon files) -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Swiper.js JS -->
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <!-- jQuery (for Bootstrap and other JS functionality) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS (optional, if using Bootstrap components) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+    <!-- Chat Widget CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Chat Widget JS -->
+    <script src="script.js"></script>
+    <!-- Custom JavaScript for Swiper -->
+     
+
+    
+
+
+</head>
+<body id="page-index">
+
+        <!-- ======== Header (Navigation Bar) ======== -->
+    <header id="navbar">
+        <div class="container"> <!-- CSS for #navbar .container makes this display:flex -->
+            <div class="logo">
+                <a href="index.html" aria-label="Vintage Rides Homepage">Vintage Rides</a>
+            </div>
+            <nav aria-label="Main navigation">
+                <!-- THIS IS THE HAMBURGER BUTTON -->
+                <button id="mobile-nav-toggle" aria-controls="main-navigation" aria-expanded="false">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                    <span class="sr-only">Toggle Navigation</span>
+                </button>
+                <!-- THIS IS THE NAVIGATION LIST -->
+                <ul id="main-navigation">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="cars.html">Cars</a></li>
+                    <li><a href="compare.html">Compare</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li class="nav-action-item nav-action-login"><a href="login.html" class="nav-login-btn" id="nav-auth-link">Login / Register</a></li>
+                    <li class="nav-action-item nav-action-cart">
+                        <a href="cart.html" class="nav-cart-btn" aria-label="View Shopping Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-item-count" class="cart-item-count" aria-live="polite">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <!-- ======== Hero Section ======== -->
+    <section class="hero-section">
+        <!--
+            You can use an image as a fallback if the video doesn't load or for browsers that don't support autoplay.
+            Example: style="background-image: url('path/to/hero-image.jpg'); background-size: cover; background-position: center;"
+        -->
+        <video class="hero-video-bg" autoplay muted loop playsinline poster="images/hero-poster.jpg">
+            <!-- Replace with your actual video source. Consider multiple formats for compatibility. -->
+            <source src="https://cdn.pixabay.com/video/2019/06/13/24387-342401483_large.mp4" type="video/mp4">
+            <!-- <source src="videos/hero-vintage-cars.webm" type="video/webm"> -->
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-content">
+            <h1 class="scroll-fade-in">Discover Your Timeless Classic</h1>
+            <p class="scroll-fade-in" style="animation-delay: 0.2s;">Experience the pinnacle of automotive history. Curated collection, unparalleled quality.</p>
+            <div class="btn-group scroll-fade-in" style="animation-delay: 0.4s;">
+                <a href="cars.html" class="btn btn-primary btn-lg">Explore Inventory</a>
+                <a href="#sell-your-car-teaser" class="btn btn-outline-light2 btn-lg">Sell Your Car</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== Brand Introduction / Value Proposition ======== -->
+    <section id="brand-intro" class="section section-light scroll-fade-in">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Welcome to Vintage Rides</h2>
+                <p class="lead">More than a marketplace; we are custodians of automotive legacy. We connect discerning collectors and enthusiasts with extraordinary vintage automobiles from around the globe. Our commitment is to transparency, quality, and a shared passion for timeless design and engineering.</p>
+            </div>
+            <div class="row feature-icons-grid" style="display: flex; flex-wrap: wrap; gap: var(--spacing-lg); justify-content: space-around;">
+                <div class="col-md-3 feature-item text-center" style="flex-basis: 250px; flex-grow: 1;">
+                    <i class="fas fa-medal fa-3x text-primary mb-3"></i>
+                    <h4>Curated Selection</h4>
+                    <p>Each vehicle is handpicked for its history, condition, and significance.</p>
+                </div>
+                <div class="col-md-3 feature-item text-center" style="flex-basis: 250px; flex-grow: 1;">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h4>Expert Inspections</h4>
+                    <p>Rigorous checks by certified mechanics ensure authenticity and quality.</p>
+                </div>
+                <div class="col-md-3 feature-item text-center" style="flex-basis: 250px; flex-grow: 1;">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h4>Seamless Process</h4>
+                    <p>A transparent and effortless experience from browsing to ownership.</p>
+                </div>
+                <div class="col-md-3 feature-item text-center" style="flex-basis: 250px; flex-grow: 1;">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h4>Passionate Community</h4>
+                    <p>Join a network of enthusiasts and collectors who share your passion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <!-- ======== Featured Cars Section - SWIPER CAROUSEL ======== -->
+<section id="featured-cars" class="section section-medium scroll-fade-in">
+    <div class="container">
+        <h2 class="section-title text-center">Featured Masterpieces</h2>
+        <p class="text-center lead mb-5">A glimpse into our exclusive collection of automotive legends.</p>
+        
+        <!-- Swiper Container -->
+        <div class="swiper-container featured-cars-swiper">
+            <div class="swiper-wrapper">
+                <!-- Car 1: Chevrolet Bel Air -->
+                <div class="swiper-slide">
+                    <div class="card car-item">
+                        <div class="card-badge card-badge-featured">Featured</div>
+                        <img src="https://www.motortrend.com/uploads/sites/21/2021/07/001-1957-chevy-jesse.jpg?w=768&width=768&q=75&format=webp" alt="1957 Chevrolet Bel Air" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Chevrolet Bel Air</h3>
+                            <p class="card-subtitle">1957</p>
+                            <p class="card-text">Iconic American classic with stunning fins and chrome. A true head-turner.</p>
+                            <p class="card-price">$65,000</p>
+                            <div class="card-footer d-flex justify-content-between">
+                                <button class="btn btn-primary btn-sm view-details-btn" data-car-id="1">View Details</button>
+                                <button class="btn btn-secondary btn-sm add-to-cart-btn" data-car-id="1">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Car 2: Ford Mustang Shelby GT500 -->
+                <div class="swiper-slide">
+                    <div class="card car-item">
+                        <div class="card-badge card-badge-just-arrived">Just Arrived</div>
+                        <img src="https://cdn.dealeraccelerate.com/rkm/1/8238/561375/1920x1440/1967-ford-mustang-shelby-gt500-tribute" alt="1967 Ford Mustang Shelby GT500" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Ford Mustang Shelby GT500</h3>
+                            <p class="card-subtitle">1967</p>
+                            <p class="card-text">A legendary muscle car with raw power and timeless appeal. Ready to roar.</p>
+                            <p class="card-price">$180,000</p>
+                            <div class="card-footer">
+                                <button class="btn btn-primary btn-sm view-details-btn" data-car-id="2">View Details</button>
+                                <button class="btn btn-secondary btn-sm add-to-cart-btn" data-car-id="2">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                
+                <!-- Car 4: Volkswagen Beetle -->
+                <div class="swiper-slide">
+                    <div class="card car-item">
+                        <div class="card-badge card-badge-sold">Sold</div>
+                        <img src="https://www.automoli.com/common/vehicles/_assets/img/gallery/f109/volkswagen-beetle-convertible-a5.jpg" alt="1963 Volkswagen Beetle" class="card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">Volkswagen Beetle</h3>
+                            <p class="card-subtitle">1963</p>
+                            <p class="card-text">The beloved 'Bug', a symbol of counter-culture and timeless practicality.</p>
+                            <p class="card-price">$25,000</p>
+                            <div class="card-footer">
+                                <button class="btn btn-primary btn-sm view-details-btn" data-car-id="3">View Details</button>
+                                <button class="btn btn-secondary btn-sm add-to-cart-btn" data-car-id="3" disabled>Sold Out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add Navigation Arrows -->
+            <div class="swiper-button-next featured-cars-next"></div>
+            <div class="swiper-button-prev featured-cars-prev"></div>
+            
+            <!-- Add Pagination -->
+            <div class="swiper-pagination featured-cars-pagination"></div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="cars.html" class="btn btn-primary btn-lg">View All Inventory</a>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+    <!-- ======== "Why Choose Us?" Section (Alternative Layout) ======== -->
+    <section id="why-us" class="section section-light scroll-fade-in">
+        <div class="container">
+            <h2 class="section-title text-center">The RetroRides Difference</h2>
+            <p class="text-center lead mb-5">Our philosophy is built on trust, expertise, and a dedication to the art of the automobile.</p>
+            <div class="row" style="display: flex; flex-wrap: wrap; gap: var(--spacing-lg); justify-content: center;">
+                <div class="col-lg-4 col-md-6 mb-4" style="flex-basis: 300px; flex-grow: 1;">
+                    <div class="card h-100 text-center p-4">
+                        <i class="fas fa-gem fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Unrivaled Quality</h4>
+                        <p class="card-text">We source only the finest examples, meticulously maintained and historically significant, ensuring lasting value and enjoyment.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4" style="flex-basis: 300px; flex-grow: 1;">
+                    <div class="card h-100 text-center p-4">
+                        <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Expert Guidance</h4>
+                        <p class="card-text">Our team of seasoned specialists offers personalized advice and insights, guiding you through every step of your acquisition or sale.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4" style="flex-basis: 300px; flex-grow: 1;">
+                    <div class="card h-100 text-center p-4">
+                        <i class="fas fa-globe-americas fa-3x text-primary mb-3"></i>
+                        <h4 class="card-title">Global Network</h4>
+                        <p class="card-text">Access an international network of collectors, sellers, and unique vehicles, broadening your opportunities to find or place your dream car.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== Testimonials Section ======== -->
+    <section id="testimonials" class="section section-dark scroll-fade-in">
+    <div class="container">
+        <h2 class="section-title text-center">Voices of Our Collectors</h2>
+        <p class="text-center lead mb-5" style="color: rgba(255,255,255,0.8);">Hear from enthusiasts who found their automotive dreams with us.</p>
+        <div class="testimonial-grid"> <!-- Changed from row to testimonial-grid -->
+            <div class="testimonial-item">
+                <div class="testimonial-card">
+                    <blockquote>
+                        <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                        RetroRides helped me find my dream 1965 Mustang with ease and exceptional service. The car was even better than described. Truly a game changer for collectors!
+                    </blockquote>
+                    <p class="author">James P., California</p>
+                    <p class="text-muted small">Purchased: 1965 Ford Mustang</p>
+                </div>
+            </div>
+            <div class="testimonial-item">
+                <div class="testimonial-card">
+                    <blockquote>
+                        <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                        The quality and reliability of the cars offered by RetroRides is unmatched. Their inspection process is thorough, and the team is incredibly knowledgeable. I am a happy repeat customer!
+                    </blockquote>
+                    <p class="author">Sarah L., New York</p>
+                    <p class="text-muted small">Purchased: 1958 Porsche 356A</p>
+                </div>
+            </div>
+            <div class="testimonial-item">
+                <div class="testimonial-card">
+                    <blockquote>
+                        <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                        Fantastic platform with excellent customer support. They handled my consignment expertly and found a great new home for my beloved classic. I recommend RetroRidesto all car enthusiasts.
+                    </blockquote>
+                    <p class="author">Michael B., Florida</p>
+                    <p class="text-muted small">Sold: 1972 Jaguar E-Type</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <!-- ======== "Sell Your Car" Teaser Section ======== -->
+    <section id="sell-your-car-teaser" class="section section-primary scroll-fade-in text-center">
+        <div class="container">
+            <h2 class="section-title">Entrust Us With Your Legacy</h2>
+            <p class="lead mb-4" style="max-width: 700px; margin-left: auto; margin-right:auto;">Ready to part with your classic? RetroRides offers a premium consignment service, connecting your vehicle with passionate buyers worldwide. We handle the details, you reap the rewards.</p>
+            <a href="contact.html#sell-car-form" class="btn btn-light btn-lg">Learn About Consignment</a>
+            <!-- Assuming contact.html will have a specific section or form for selling -->
+        </div>
+    </section>
+
+    <!-- ======== Footer ======== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-columns-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <div class="footer-column">
+                    <h5>Vintage Rides</h5>
+                    <p>Your trusted partner in the world of classic and vintage automobiles. Discover, acquire, and cherish automotive history.</p>
+                    <div class="footer-social-icons">
+                        <a href="#" aria-label="Vintage Rides on Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Vintage Rides on Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Vintage Rides on YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="cars.html">Browse Cars</a></li>
+                        <li><a href="compare.html">Compare Models</a></li>
+                        <li><a href="about.html">About Our Company</a></li>
+                        <li><a href="contact.html#sell-car-form">Sell Your Car</a></li>
+                        <li><a href="login.html">Member Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Financing Options</a></li>
+                        <li><a href="#">Shipping & Logistics</a></li>
+                        <li><a href="#">Inspection Guide</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Contact Us</h5>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 1234 Classic Lane, Car City, USA</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+15551234567">+1 (555) 123-4567</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:support@vintagerides.com">support@vintagerides.com</a></p>
+                        <p><i class="fas fa-clock"></i> Mon - Fri: 9:00 AM - 6:00 PM</p>
+                    </address>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2024</span> Vintage Rides LLC. All Rights Reserved. Designed with <i class="fas fa-heart text-primary"></i> for car lovers.</p>
+                <p class="small">This website is a demonstration project and does not represent a real business.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======== Modals (Hidden by default) ======== -->
+    <!-- Car Detail Modal -->
+    <div id="carDetailModal" class="modal" aria-labelledby="carDetailModalTitle" aria-hidden="true" role="dialog">
+        <div class="modal-dialog modal-lg"> <!-- modal-lg for wider content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="carDetailModalTitle" class="modal-title">Car Details</h3>
+                    <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Content will be injected by JavaScript -->
+                    <p>Loading car details...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-modal-dismiss>Close</button>
+                    <!-- Could add "Add to Cart" or "Inquire" button here, also handled by JS if needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other modals can be added here (e.g., quick login, newsletter signup) -->
+
+
+        <!-- ======== Chat Widget ======== -->
+        <button id="chat-toggle-btn" aria-label="Toggle Chat Window" aria-expanded="false">
+            <i class="fas fa-comments"></i> <!-- Initial icon -->
+        </button>
+        <div id="chat-widget" role="log" aria-live="polite">
+            <div id="chat-widget-header">
+                <span class="chat-title">Chat with RetroRides</span> <!-- Added a span for title if needed -->
+                <button class="close-chat-btn" aria-label="Close Chat Window">&times;</button>
+            </div>
+            <div id="chat-widget-messages" aria-relevant="additions" aria-atomic="false">
+                <!-- Messages will appear here. Empty initially. -->
+            </div>
+            <div id="chat-widget-input">
+                <input type="text" placeholder="Type your message..." aria-label="Chat message input">
+                <button aria-label="Send Chat Message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    
+
+    <!-- JavaScript files -->
+    <script src="script.js"></script>
+    <script>
+        // Small inline script to set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
