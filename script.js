@@ -38,7 +38,7 @@ let currentCarFilters = { searchTerm: '', priceRange: 'all', year: 'all', make: 
 // -----------------------------------------------------------------------------
 // WARNING: Exposing API keys in client-side code is a security risk for production.
 // Consider moving API calls to a backend proxy for a live website.
-const DEEPSEEK_API_KEY = "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"; // !!! REPLACE WITH YOUR ACTUAL KEY IF DIFFERENT !!!
+const DEEPSEEK_API_KEY = "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"; // !!! REPLACE WITH YOUR ACTUAL KEY IF DIFFERENT !!!
 const DEEPSEEK_MODEL = "deepseek/deepseek-r1:free";
 const DEEPSEEK_API_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
